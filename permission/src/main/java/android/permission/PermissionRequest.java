@@ -124,11 +124,11 @@ public class PermissionRequest implements Observer {
             return this;
         }
 
-        public Builder setOnPermissionRequestListener(OnPermissionGrantedListener onPermissionGrantedListener) {
+        public Builder setOnPermissionGrantedListener(OnPermissionGrantedListener onPermissionGrantedListener) {
             p.mOnPermissionGrantedListener = onPermissionGrantedListener;
             return this;
         }
-        public Builder setOnPermissionRequestListener(OnPermissionDeniedListener onPermissionDeniedListener) {
+        public Builder setOnPermissionDeniedListener(OnPermissionDeniedListener onPermissionDeniedListener) {
             p.mOnPermissionDeniedListener = onPermissionDeniedListener;
             return this;
         }
