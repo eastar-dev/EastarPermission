@@ -64,42 +64,40 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
     private AlertDialog mDlg;
 
     private void load() {
-        if (check_permissions()) {
+        final ArrayList<String> permissions = mPermissions;
+
+        if (IS_PERMISSIONS(mContext, permissions)) {
             fireGranted();
+        }
+
+        filterNeedRequestPermissions(permissions);
+
+        if (permissions.size() <= 0) {
+            fireDenied();
             return;
         }
+
         if (!step_request) {
             requestPermissions();
             return;
         }
+
         denyPermissions();
     }
 
-    public boolean check_permissions() {
+    private ArrayList<String> filterNeedRequestPermissions(ArrayList<String> permissions) {
         final ArrayList<String> requestPermissions = new ArrayList<>();
-        for (String permission : mPermissions) {
+        for (String permission : permissions) {
             if (needRequestPermissions(mActivity, permission))
                 requestPermissions.add(permission);
         }
-        mPermissions.clear();
-        mPermissions.addAll(requestPermissions);
-        return mPermissions.size() <= 0;
+        permissions.clear();
+        permissions.addAll(requestPermissions);
+        return permissions;
     }
-    public static boolean CHECK_PERMISSIONS(Activity activity, String... permissions) {
-        return CHECK_PERMISSIONS(activity, Arrays.asList(permissions));
-    }
-    public static boolean CHECK_PERMISSIONS(Activity activity, List<String> permissions) {
-        if (permissions == null || permissions.size() <= 0)
-            return true;
 
-        final ArrayList<String> requestPermissions = new ArrayList<>();
-        for (String permission : permissions) {
-            if (needRequestPermissions(activity, permission))
-                requestPermissions.add(permission);
-        }
-        return requestPermissions.size() <= 0;
-    }
-    private static boolean needRequestPermissions(Activity activity, String permission) {
+    //권한을 물어봐야 하는지
+    private boolean needRequestPermissions(Activity activity, String permission) {
         //이미승인됨
         if (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(activity, permission))
             return false;
@@ -196,5 +194,19 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
         finish();
         overridePendingTransition(0, 0);
     }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //권한 있는지
+    public static boolean IS_PERMISSIONS(Context context, String... permissions) {
+        return IS_PERMISSIONS(context, Arrays.asList(permissions));
+    }
+    public static boolean IS_PERMISSIONS(Context context, List<String> permissions) {
+        if (permissions == null || permissions.size() <= 0)
+            return true;
 
+        for (String permission : permissions) {
+            if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(context, permission))
+                return false;
+        }
+        return true;
+    }
 }
