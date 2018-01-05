@@ -1,10 +1,8 @@
 package android.permission;
 
-
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -17,6 +15,7 @@ import android.view.WindowManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class PermissionChecker extends android.support.v7.app.AppCompatActivity {
 
@@ -25,8 +24,6 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
 
     private static final int REQ_REQUEST = 10;
     private static final int REQ_SETTING = 20;
-//	private static final int REQ_SYSTEM_ALERT_WINDOW_PERMISSION_REQUEST = 30;
-//	private static final int REQ_SYSTEM_ALERT_WINDOW_PERMISSION_REQUEST_SETTING = 31;
 
     public static interface EXTRA {
         String PERMISSIONS = "PERMISSIONS";
@@ -62,61 +59,54 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
         mRequestMessage = intent.getCharSequenceExtra(EXTRA.REQUEST_MESSAGE);
         mDenyMessage = intent.getCharSequenceExtra(EXTRA.DENY_MESSAGE);
     }
-//	private void requestWindowPermission() {
-////		if (permission.equals(Manifest.permission.SYSTEM_ALERT_WINDOW) && !Settings.canDrawOverlays(mContext))
-////			needPermissions.add(permission);
-//
-//		final Context context = mContext;
-//		Uri uri = Uri.fromParts("package", context.getPackageName(), null);
-//		final Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, uri);
-//		new AlertDialog.Builder(context)//
-//				.setMessage(mRequestMessage)//
-//				.setCancelable(false)//
-//				.setPositiveButton("설정", new DialogInterface.OnClickListener() {
-//					@Override
-//					public void onClick(DialogInterface dialogInterface, int i) {
-//						startActivityForResult(intent, REQ_SYSTEM_ALERT_WINDOW_PERMISSION_REQUEST);
-//					}
-//				}).show();
-//	}
 
     private boolean step_request;
     private AlertDialog mDlg;
 
     private void load() {
-
-        if (CHECK_PERMISSIONS(mContext, mPermissions)) {
+        if (check_permissions()) {
             fireGranted();
             return;
         }
-
         if (!step_request) {
             requestPermissions();
             return;
         }
-
         denyPermissions();
     }
 
-    public static boolean CHECK_PERMISSIONS(Context context, String... permissions) {
-        return CHECK_PERMISSIONS(context, new ArrayList<String>(Arrays.asList(permissions)));
+    public boolean check_permissions() {
+        final ArrayList<String> requestPermissions = new ArrayList<>();
+        for (String permission : mPermissions) {
+            if (needRequestPermissions(mActivity, permission))
+                requestPermissions.add(permission);
+        }
+        mPermissions.clear();
+        mPermissions.addAll(requestPermissions);
+        return mPermissions.size() <= 0;
     }
-
-    public static boolean CHECK_PERMISSIONS(Context context, ArrayList<String> permissions) {
+    public static boolean CHECK_PERMISSIONS(Activity activity, String... permissions) {
+        return CHECK_PERMISSIONS(activity, Arrays.asList(permissions));
+    }
+    public static boolean CHECK_PERMISSIONS(Activity activity, List<String> permissions) {
         if (permissions == null || permissions.size() <= 0)
             return true;
 
-        final ArrayList<String> needPermissions = new ArrayList<String>();
+        final ArrayList<String> requestPermissions = new ArrayList<>();
         for (String permission : permissions) {
-            int result = ContextCompat.checkSelfPermission(context, permission);
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                needPermissions.add(permission);
-            }
+            if (needRequestPermissions(activity, permission))
+                requestPermissions.add(permission);
         }
-
-        permissions.clear();
-        permissions.addAll(needPermissions);
-        return permissions.size() <= 0;
+        return requestPermissions.size() <= 0;
+    }
+    private static boolean needRequestPermissions(Activity activity, String permission) {
+        //이미승인됨
+        if (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(activity, permission))
+            return false;
+        //영구거부됨
+        if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission))
+            return false;
+        return true;
     }
 
     private void requestPermissions() {
@@ -129,24 +119,11 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
 
         mDlg = new AlertDialog.Builder(mContext)//
                 .setMessage(message)//
-                .setNegativeButton("거부", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        fireDenied();
-                    }
-                })//
-                .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        fireDenied();
-                    }
-                })//
-                .setPositiveButton("설정", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        ActivityCompat.requestPermissions(mActivity, mPermissions.toArray(new String[mPermissions.size()]), REQ_REQUEST);
-                        step_request = true;
-                    }
+                .setOnCancelListener(dialog -> fireDenied())//
+                .setNegativeButton("거부", (dialogInterface, i) -> fireDenied())//
+                .setPositiveButton("설정", (dialogInterface, i) -> {
+                    ActivityCompat.requestPermissions(mActivity, mPermissions.toArray(new String[mPermissions.size()]), REQ_REQUEST);
+                    step_request = true;
                 })//
                 .show();
         mDlg.setCanceledOnTouchOutside(false);
@@ -183,28 +160,15 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
 
         mDlg = new AlertDialog.Builder(context)//
                 .setMessage(message)//
-                .setPositiveButton("거부", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        fireDenied();
-                    }
-                })//
-                .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        fireDenied();
-                    }
-                })//
-                .setNegativeButton("설정", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        try {
-                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:" + context.getPackageName()));
-                            startActivityForResult(intent, REQ_SETTING);
-                        } catch (ActivityNotFoundException e) {
-                            Intent intent = new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
-                            startActivityForResult(intent, REQ_SETTING);
-                        }
+                .setOnCancelListener(dialog -> fireDenied())//
+                .setPositiveButton("거부", (dialogInterface, i) -> fireDenied())//
+                .setNegativeButton("설정", (dialogInterface, i) -> {
+                    try {
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:" + context.getPackageName()));
+                        startActivityForResult(intent, REQ_SETTING);
+                    } catch (ActivityNotFoundException e) {
+                        Intent intent = new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
+                        startActivityForResult(intent, REQ_SETTING);
                     }
                 })//
                 .show();
