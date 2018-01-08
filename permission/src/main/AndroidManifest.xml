@@ -4,7 +4,7 @@
     <application>
         <activity
             android:name="android.permission.PermissionChecker"
-            android:theme="@style/Theme.Transparent" />
+            android:theme="@style/PermissionTheme" />
     </application>
 
 </manifest>

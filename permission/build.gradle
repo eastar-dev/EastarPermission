@@ -2,9 +2,24 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.djrain'
 
-android {
-    compileSdkVersion 26
+apply plugin: 'maven'
 
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "http://localhost:8081/repository/maven-releases/") {
+                authentication(userName: "admin", password: "admin123")
+                pom.groupId = "com.eastandroid.smartc"
+                pom.artifactId = "permission"
+                pom.version = '1.0.0'
+            }
+        }
+    }
+}
+
+
+android {
+    compileSdkVersion 27
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 26
@@ -18,5 +33,5 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:appcompat-v7:27.0.2'
 }
