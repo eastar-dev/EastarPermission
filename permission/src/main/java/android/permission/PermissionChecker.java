@@ -25,7 +25,7 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
     private static final int REQ_REQUEST = 10;
     private static final int REQ_SETTING = 20;
 
-    public static interface EXTRA {
+    public interface EXTRA {
         String PERMISSIONS = "PERMISSIONS";
         String REQUEST_MESSAGE = "REQUEST_MESSAGE";
         String DENY_MESSAGE = "DENY_MESSAGE";
@@ -68,10 +68,10 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
 
         if (IS_PERMISSIONS(mContext, permissions)) {
             fireGranted();
+            return;
         }
 
         filterNeedRequestPermissions(permissions);
-
         if (permissions.size() <= 0) {
             fireDenied();
             return;
@@ -196,6 +196,23 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //권한 있는지
+
+    /** instead IS_PERMISSIONS */
+    @Deprecated
+    public static boolean CHECK_PERMISSIONS(Context context, String... permissions) {
+        return IS_PERMISSIONS(context, permissions);
+    }
+    /** instead IS_PERMISSIONS */
+    @Deprecated
+    public static boolean CHECK_PERMISSIONS(Context context, List<String> permissions) {
+        return IS_PERMISSIONS(context, permissions);
+    }
+    /** instead IS_PERMISSIONS */
+    @Deprecated
+    public static boolean CHECK_PERMISSIONS(Context context, ArrayList<String> permissions) {
+        return IS_PERMISSIONS(context, permissions);
+    }
+
     public static boolean IS_PERMISSIONS(Context context, String... permissions) {
         return IS_PERMISSIONS(context, Arrays.asList(permissions));
     }
