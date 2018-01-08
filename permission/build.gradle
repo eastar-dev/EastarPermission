@@ -4,7 +4,6 @@ group = 'com.github.djrain'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.1.0"
 
     defaultConfig {
         minSdkVersion 14
