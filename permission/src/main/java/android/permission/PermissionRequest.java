@@ -65,7 +65,8 @@ public class PermissionRequest implements Observer {
 
     @Override
     public void update(Observable observer, Object data) {
-        @SuppressWarnings("unchecked")        final ArrayList<String> deniedPermissions = (ArrayList<String>) data;
+        @SuppressWarnings("unchecked")
+        final ArrayList<String> deniedPermissions = (ArrayList<String>) data;
         final OnPermissionRequestListener listener = mOnPermissionRequestListener;
         if (listener != null) {
             if ((deniedPermissions == null || deniedPermissions.size() <= 0))
