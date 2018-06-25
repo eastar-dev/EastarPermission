@@ -48,7 +48,13 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
         mActivity = this;
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         parseExtra();
-
+        load();
+    }
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        parseExtra();
         load();
     }
 
@@ -78,19 +84,20 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
                 deniedPermissions.add(permission);
         }
         if (deniedPermissions.size() <= 0) {
-            android.util.Log.d("PERMISSIONS", "이미승인됨");
+            //android.util.Log..("PERMISSIONS", "이미 다 승인됨");
             fireGranted();
             return;
         }
         mDeniedPermissions = deniedPermissions;
         mRequestPermissions = deniedPermissions;
+        //android.util.Log..("PERMISSION", "" + step_request);
         if (!step_request) {
-            android.util.Log.d("PERMISSIONS", "묻어봄");
+            //android.util.Log..("PERMISSIONS", "묻어봄");
             requestPermissions();
             return;
         }
 
-        android.util.Log.d("PERMISSIONS", "거부됨");
+        //android.util.Log..("PERMISSIONS", "거부됨");
         denyPermissions();
     }
 
@@ -105,6 +112,7 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
         final CharSequence message = mRequestMessage;
         if (message == null || message.length() <= 0) {
             ActivityCompat.requestPermissions(mActivity, mRequestPermissions.toArray(new String[mRequestPermissions.size()]), REQ_REQUEST);
+            //android.util.Log..("PERMISSION", "" + step_request);
             step_request = true;
             return;
         }

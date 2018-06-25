@@ -21,15 +21,14 @@ public class PermissionRequest implements Observer {
     protected CharSequence mDenyMessage;
 
     @Deprecated
-    public interface OnPermissionRequestListener extends OnPermissionDeniedListener, OnPermissionGrantedListener {
-    }
+    public interface OnPermissionRequestListener extends OnPermissionDeniedListener, OnPermissionGrantedListener {}
 
     public interface OnPermissionGrantedListener {
         void onGranted();
     }
 
     public interface OnPermissionDeniedListener {
-        void onDenied(ArrayList<String> deniedPermissions);
+        void onDenied(PermissionRequest request, ArrayList<String> deniedPermissions);
     }
 
     public PermissionRequest(Context context, ArrayList<String> permissions) {
@@ -37,13 +36,12 @@ public class PermissionRequest implements Observer {
         mPermissions = permissions;
     }
 
-    /**
-     *
-     */
+    public ArrayList<String> getRequestPermissions() {
+        return mPermissions;
+    }
+
     @Deprecated
-    public PermissionRequest(Context context, ArrayList<String> permissions
-            , OnPermissionRequestListener onPermissionRequestListener
-            , String rquestMessage, String denyMessage) {
+    public PermissionRequest(Context context, ArrayList<String> permissions, OnPermissionRequestListener onPermissionRequestListener, String rquestMessage, String denyMessage) {
         mContext = context;
         mPermissions = permissions;
         mOnPermissionRequestListener = onPermissionRequestListener;
@@ -51,10 +49,7 @@ public class PermissionRequest implements Observer {
         mDenyMessage = denyMessage;
     }
 
-    public PermissionRequest(Context context, ArrayList<String> permissions
-            , OnPermissionGrantedListener onPermissionGrantedListener
-            , OnPermissionDeniedListener onPermissionDeniedListener
-            , String rquestMessage, String denyMessage) {
+    public PermissionRequest(Context context, ArrayList<String> permissions, OnPermissionGrantedListener onPermissionGrantedListener, OnPermissionDeniedListener onPermissionDeniedListener, String rquestMessage, String denyMessage) {
         mContext = context;
         mPermissions = permissions;
         mOnPermissionGrantedListener = onPermissionGrantedListener;
@@ -65,24 +60,26 @@ public class PermissionRequest implements Observer {
 
     @Override
     public void update(Observable observer, Object data) {
-        @SuppressWarnings("unchecked")
-        final ArrayList<String> deniedPermissions = (ArrayList<String>) data;
+        @SuppressWarnings("unchecked") final ArrayList<String> deniedPermissions = (ArrayList<String>) data;
+
+        //android.util.Log..("PERMISSION", "승인상태1:" + deniedPermissions);
         final OnPermissionRequestListener listener = mOnPermissionRequestListener;
         if (listener != null) {
             if ((deniedPermissions == null || deniedPermissions.size() <= 0))
                 listener.onGranted();
             else
-                listener.onDenied(deniedPermissions);
+                listener.onDenied(this, deniedPermissions);
         }
 
         final OnPermissionGrantedListener grantedListener = mOnPermissionGrantedListener;
-        final boolean granted = deniedPermissions == null || deniedPermissions.size() <= 0;
+        final boolean granted = (deniedPermissions == null || deniedPermissions.size() <= 0);
+        //android.util.Log..("PERMISSION", "승인상태2:" + granted);
         if (grantedListener != null && granted)
             grantedListener.onGranted();
 
         final OnPermissionDeniedListener deniedListener = mOnPermissionDeniedListener;
         if (deniedListener != null && !granted)
-            grantedListener.onGranted();
+            deniedListener.onDenied(this, deniedPermissions);
 
         PermissionObserver.getInstance().deleteObserver(this);
     }
@@ -100,6 +97,13 @@ public class PermissionRequest implements Observer {
 
             return;
         }
+
+        //android.util.Log..("PERMISSION", "mContext : " + mContext);
+        //android.util.Log..("PERMISSION", "mPermissions : " + mPermissions);
+        //android.util.Log..("PERMISSION", "mOnPermissionGrantedListener : " + mOnPermissionGrantedListener);
+        //android.util.Log..("PERMISSION", "mOnPermissionDeniedListener : " + mOnPermissionDeniedListener);
+        //android.util.Log..("PERMISSION", "mRequestMessage : " + mRequestMessage);
+        //android.util.Log..("PERMISSION", "mDenyMessage : " + mDenyMessage);
 
         PermissionObserver.getInstance().addObserver(this);
         Intent intent = new Intent(mContext, PermissionChecker.class);
