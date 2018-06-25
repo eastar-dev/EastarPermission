@@ -2,7 +2,9 @@ package android.permission;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,15 +15,11 @@ public class PermissionRequest implements Observer {
 
     protected Context mContext;
     protected ArrayList<String> mPermissions;
-    @Deprecated
-    protected OnPermissionRequestListener mOnPermissionRequestListener;
+
     protected OnPermissionGrantedListener mOnPermissionGrantedListener;
     protected OnPermissionDeniedListener mOnPermissionDeniedListener;
     protected CharSequence mRequestMessage;
     protected CharSequence mDenyMessage;
-
-    @Deprecated
-    public interface OnPermissionRequestListener extends OnPermissionDeniedListener, OnPermissionGrantedListener {}
 
     public interface OnPermissionGrantedListener {
         void onGranted();
@@ -40,15 +38,6 @@ public class PermissionRequest implements Observer {
         return mPermissions;
     }
 
-    @Deprecated
-    public PermissionRequest(Context context, ArrayList<String> permissions, OnPermissionRequestListener onPermissionRequestListener, String rquestMessage, String denyMessage) {
-        mContext = context;
-        mPermissions = permissions;
-        mOnPermissionRequestListener = onPermissionRequestListener;
-        mRequestMessage = rquestMessage;
-        mDenyMessage = denyMessage;
-    }
-
     public PermissionRequest(Context context, ArrayList<String> permissions, OnPermissionGrantedListener onPermissionGrantedListener, OnPermissionDeniedListener onPermissionDeniedListener, String rquestMessage, String denyMessage) {
         mContext = context;
         mPermissions = permissions;
@@ -63,14 +52,6 @@ public class PermissionRequest implements Observer {
         @SuppressWarnings("unchecked") final ArrayList<String> deniedPermissions = (ArrayList<String>) data;
 
         //android.util.Log..("PERMISSION", "승인상태1:" + deniedPermissions);
-        final OnPermissionRequestListener listener = mOnPermissionRequestListener;
-        if (listener != null) {
-            if ((deniedPermissions == null || deniedPermissions.size() <= 0))
-                listener.onGranted();
-            else
-                listener.onDenied(this, deniedPermissions);
-        }
-
         final OnPermissionGrantedListener grantedListener = mOnPermissionGrantedListener;
         final boolean granted = (deniedPermissions == null || deniedPermissions.size() <= 0);
         //android.util.Log..("PERMISSION", "승인상태2:" + granted);
@@ -84,26 +65,17 @@ public class PermissionRequest implements Observer {
         PermissionObserver.getInstance().deleteObserver(this);
     }
 
-    public void run() {
+    public boolean run() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+            return false;
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            final OnPermissionRequestListener listener = mOnPermissionRequestListener;
-            if (listener != null)
-                listener.onGranted();
-
-            final OnPermissionGrantedListener grantedListener = mOnPermissionGrantedListener;
-            if (grantedListener != null)
-                grantedListener.onGranted();
-
-            return;
+        final ArrayList<String> deniedPermissions = new ArrayList<>();
+        for (String permission : mPermissions) {
+            if (PackageManager.PERMISSION_DENIED == ContextCompat.checkSelfPermission(mContext, permission))
+                deniedPermissions.add(permission);
         }
-
-        //android.util.Log..("PERMISSION", "mContext : " + mContext);
-        //android.util.Log..("PERMISSION", "mPermissions : " + mPermissions);
-        //android.util.Log..("PERMISSION", "mOnPermissionGrantedListener : " + mOnPermissionGrantedListener);
-        //android.util.Log..("PERMISSION", "mOnPermissionDeniedListener : " + mOnPermissionDeniedListener);
-        //android.util.Log..("PERMISSION", "mRequestMessage : " + mRequestMessage);
-        //android.util.Log..("PERMISSION", "mDenyMessage : " + mDenyMessage);
+        if (deniedPermissions.size() <= 0)
+            return false;
 
         PermissionObserver.getInstance().addObserver(this);
         Intent intent = new Intent(mContext, PermissionChecker.class);
@@ -112,6 +84,7 @@ public class PermissionRequest implements Observer {
         intent.putExtra(PermissionChecker.EXTRA.DENY_MESSAGE, mDenyMessage);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
+        return true;
     }
 
     public static class Builder {
@@ -121,12 +94,6 @@ public class PermissionRequest implements Observer {
         }
         public Builder(Context context, String... permissions) {
             this(context, new ArrayList<String>(Arrays.asList(permissions)));
-        }
-
-        @Deprecated
-        public Builder setOnPermissionRequestListener(OnPermissionRequestListener onPermissionRequestListener) {
-            p.mOnPermissionRequestListener = onPermissionRequestListener;
-            return this;
         }
 
         public Builder setOnPermissionGrantedListener(OnPermissionGrantedListener onPermissionGrantedListener) {
@@ -148,8 +115,8 @@ public class PermissionRequest implements Observer {
             return this;
         }
 
-        public void run() {
-            p.run();
+        public boolean run() {
+            return p.run();
         }
     }
 }

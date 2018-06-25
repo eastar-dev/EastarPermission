@@ -11,9 +11,7 @@ public final class PermissionObserver extends Observable {
 	public static PermissionObserver getInstance() {
 		return INSTANCE;
 	}
-	public static PermissionObserver c() {
-		return INSTANCE;
-	}
+
 	@Override
 	public void notifyObservers(Object arg) {
 		setChanged();
