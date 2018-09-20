@@ -111,15 +111,16 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
     private void requestPermissions() {
         final CharSequence message = mRequestMessage;
         if (message == null || message.length() <= 0) {
+            step_request = true;
             ActivityCompat.requestPermissions(mActivity, mRequestPermissions.toArray(new String[mRequestPermissions.size()]), REQ_REQUEST);
             //android.util.Log..("PERMISSION", "" + step_request);
-            step_request = true;
+
             return;
         }
 
         if (NoMore.is(mContext, message)) {
-            fireDenied();
             step_request = true;
+            fireDenied();
             return;
         }
 
@@ -128,8 +129,8 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
                 .setOnCancelListener(dialog -> fireDenied())//
                 .setNegativeButton("거부", (dialogInterface, i) -> fireDenied())//
                 .setPositiveButton("설정", (dialogInterface, i) -> {
-                    ActivityCompat.requestPermissions(mActivity, mRequestPermissions.toArray(new String[mRequestPermissions.size()]), REQ_REQUEST);
                     step_request = true;
+                    ActivityCompat.requestPermissions(mActivity, mRequestPermissions.toArray(new String[mRequestPermissions.size()]), REQ_REQUEST);
                 })//
                 .setNeutralButton("다시보지않음", (dialogInterface, i) -> NoMore.set(mContext, message))//
                 .show();
