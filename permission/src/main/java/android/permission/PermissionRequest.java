@@ -65,17 +65,19 @@ public class PermissionRequest implements Observer {
         PermissionObserver.getInstance().deleteObserver(this);
     }
 
-    public boolean run() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-            return false;
+    public void run() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && mOnPermissionGrantedListener != null)
+            mOnPermissionGrantedListener.onGranted();
+
 
         final ArrayList<String> deniedPermissions = new ArrayList<>();
         for (String permission : mPermissions) {
             if (PackageManager.PERMISSION_DENIED == ContextCompat.checkSelfPermission(mContext, permission))
                 deniedPermissions.add(permission);
         }
-        if (deniedPermissions.size() <= 0)
-            return false;
+
+        if (deniedPermissions.size() <= 0 && mOnPermissionGrantedListener != null)
+            mOnPermissionGrantedListener.onGranted();
 
         PermissionObserver.getInstance().addObserver(this);
         Intent intent = new Intent(mContext, PermissionChecker.class);
@@ -84,14 +86,15 @@ public class PermissionRequest implements Observer {
         intent.putExtra(PermissionChecker.EXTRA.DENY_MESSAGE, mDenyMessage);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
-        return true;
     }
 
     public static class Builder {
         PermissionRequest p;
+
         public Builder(Context context, ArrayList<String> permissions) {
             p = new PermissionRequest(context, permissions);
         }
+
         public Builder(Context context, String... permissions) {
             this(context, new ArrayList<String>(Arrays.asList(permissions)));
         }
@@ -100,6 +103,7 @@ public class PermissionRequest implements Observer {
             p.mOnPermissionGrantedListener = onPermissionGrantedListener;
             return this;
         }
+
         public Builder setOnPermissionDeniedListener(OnPermissionDeniedListener onPermissionDeniedListener) {
             p.mOnPermissionDeniedListener = onPermissionDeniedListener;
             return this;
@@ -115,8 +119,8 @@ public class PermissionRequest implements Observer {
             return this;
         }
 
-        public boolean run() {
-            return p.run();
+        public void run() {
+            p.run();
         }
     }
 }
