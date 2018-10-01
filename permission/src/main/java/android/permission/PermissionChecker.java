@@ -14,10 +14,9 @@ import android.view.WindowManager;
 
 import com.eastandroid.smartc.permission.R;
 
-import java.util.Arrays;
 import java.util.List;
 
-class PermissionChecker extends android.support.v7.app.AppCompatActivity {
+public class PermissionChecker extends android.support.v7.app.AppCompatActivity {
 
     private Context mContext;
     private Activity mActivity;
