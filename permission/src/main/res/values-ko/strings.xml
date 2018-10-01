@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="permission_close">닫기</string>
+    <string name="permission_setting">설정</string>
+    <string name="permission_confirm">확인</string>
+</resources>

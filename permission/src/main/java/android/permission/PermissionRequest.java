@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 
 import java.util.ArrayList;
@@ -70,7 +71,11 @@ public class PermissionRequest implements Observer {
         Intent intent = new Intent(mContext, PermissionChecker.class);
         intent.putStringArrayListExtra(PermissionChecker.EXTRA.PERMISSIONS, new ArrayList<>(mPermissions));
         intent.putExtra(PermissionChecker.EXTRA.REQUEST_MESSAGE, mRequestMessage);
+        intent.putExtra(PermissionChecker.EXTRA.REQUEST_POSITIVE_BUTTON_TEXT, mRequestPositiveButtonText);
+        intent.putExtra(PermissionChecker.EXTRA.REQUEST_NEGATIVE_BUTTON_TEXT, mRequestNegativeButtonText);
         intent.putExtra(PermissionChecker.EXTRA.DENY_MESSAGE, mDenyMessage);
+        intent.putExtra(PermissionChecker.EXTRA.DENY_POSITIVE_BUTTON_TEXT, mDenyPositiveButtonText);
+        intent.putExtra(PermissionChecker.EXTRA.DENY_NEGATIVE_BUTTON_TEXT, mDenyNegativeButtonText);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
         return true;
@@ -155,6 +160,36 @@ public class PermissionRequest implements Observer {
 
         public Builder setDenyNegativeButtonText(CharSequence denyNegativeButtonText) {
             p.mDenyNegativeButtonText = denyNegativeButtonText;
+            return this;
+        }
+
+        public Builder setRequestMessage(@StringRes int requestMessage) {
+            setRequestMessage(p.mContext.getString(requestMessage));
+            return this;
+        }
+
+        public Builder setRequestPositiveButtonText(@StringRes int requestPositiveButtonText) {
+            setRequestPositiveButtonText(p.mContext.getString(requestPositiveButtonText));
+            return this;
+        }
+
+        public Builder setRequestNegativeButtonText(@StringRes int requestNegativeButtonText) {
+            setRequestNegativeButtonText(p.mContext.getString(requestNegativeButtonText));
+            return this;
+        }
+
+        public Builder setDenyMessage(@StringRes int denyMessage) {
+            setDenyMessage(p.mContext.getString(denyMessage));
+            return this;
+        }
+
+        public Builder setDenyPositiveButtonText(@StringRes int denyPositiveButtonText) {
+            setDenyPositiveButtonText(p.mContext.getString(denyPositiveButtonText));
+            return this;
+        }
+
+        public Builder setDenyNegativeButtonText(@StringRes int denyNegativeButtonText) {
+            setDenyNegativeButtonText(p.mContext.getString(denyNegativeButtonText));
             return this;
         }
 

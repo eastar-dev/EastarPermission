@@ -12,10 +12,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.WindowManager;
 
+import com.eastandroid.smartc.permission.R;
+
 import java.util.Arrays;
 import java.util.List;
 
-public class PermissionChecker extends android.support.v7.app.AppCompatActivity {
+class PermissionChecker extends android.support.v7.app.AppCompatActivity {
 
     private Context mContext;
     private Activity mActivity;
@@ -94,7 +96,7 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
 
         if (deniedPermissions.size() <= 0)
             throw new UnsupportedOperationException("!!deniedPermissions <= 0");
-        android.util.Log.e("PERMISSIONS", "묻어봄" + deniedPermissions);
+//        android.util.Log.e("PERMISSIONS", "묻어봄" + deniedPermissions);
         requestPermissions(deniedPermissions);
     }
 
@@ -103,17 +105,18 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
         final CharSequence message = mRequestMessage;
         final String[] permissions = deniedPermissions.toArray(new String[deniedPermissions.size()]);
 
-        android.util.Log.e("PERMISSIONS", "묻어봄" + Arrays.toString(permissions));
+//        android.util.Log.e("PERMISSIONS", "묻어봄" + Arrays.toString(permissions));
 
         if (message == null || message.length() <= 0) {
             ActivityCompat.requestPermissions(mActivity, permissions, REQ_REQUEST);
             return;
         }
 
+        final Context context = mContext;
         if (mRequestPositiveButtonText == null || mRequestPositiveButtonText.length() <= 0)
-            mRequestPositiveButtonText = "설정";
+            mRequestPositiveButtonText = context.getString(R.string.permission_confirm);
         if (mRequestNegativeButtonText == null || mRequestNegativeButtonText.length() <= 0)
-            mRequestNegativeButtonText = "거부";
+            mRequestNegativeButtonText = context.getString(R.string.permission_close);
         mDlg = new AlertDialog.Builder(mContext)//
                 .setMessage(message)//
                 .setOnCancelListener(dialog -> fireDenied())//
@@ -124,7 +127,8 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQ_REQUEST) {
             final List<String> deniedPermissions = PermissionRequest.getDeniedPermissions(mContext, mRequestedPermissions);
             if (deniedPermissions.size() > 0)
@@ -135,7 +139,6 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
     }
 
     public void denyPermissions() {
-//		Log.l();
         final Context context = mContext;
         final CharSequence message = mDenyMessage;
 
@@ -145,9 +148,9 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
         }
 
         if (mDenyPositiveButtonText == null || mDenyPositiveButtonText.length() <= 0)
-            mDenyPositiveButtonText = "거부";
+            mDenyPositiveButtonText = context.getString(R.string.permission_close);
         if (mDenyNegativeButtonText == null || mDenyNegativeButtonText.length() <= 0)
-            mDenyNegativeButtonText = "설정";
+            mDenyNegativeButtonText = context.getString(R.string.permission_setting);
 
         mDlg = new AlertDialog.Builder(context)//
                 .setMessage(message)//
