@@ -4,20 +4,14 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.WindowManager;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,8 +36,7 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
         String DENY_NEGATIVE_BUTTON_TEXT = "DENY_NEGATIVE_BUTTON_TEXT";
     }
 
-    private ArrayList<String> mRequestedPermissions;//최초 물어본 권한
-    private ArrayList<String> mDeniedPermissions = new ArrayList<>();//권한이 없는것들
+    private List<String> mRequestedPermissions;//최초 물어본 권한
 
     private CharSequence mRequestMessage;
 
@@ -83,26 +76,37 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
     private void parseExtra() {
         final Intent intent = getIntent();
         mRequestedPermissions = intent.getStringArrayListExtra(EXTRA.PERMISSIONS);
+
         mRequestMessage = intent.getCharSequenceExtra(EXTRA.REQUEST_MESSAGE);
+        mRequestPositiveButtonText = intent.getCharSequenceExtra(EXTRA.REQUEST_POSITIVE_BUTTON_TEXT);
+        mRequestNegativeButtonText = intent.getCharSequenceExtra(EXTRA.REQUEST_NEGATIVE_BUTTON_TEXT);
+
         mDenyMessage = intent.getCharSequenceExtra(EXTRA.DENY_MESSAGE);
+        mDenyPositiveButtonText = intent.getCharSequenceExtra(EXTRA.DENY_POSITIVE_BUTTON_TEXT);
+        mDenyNegativeButtonText = intent.getCharSequenceExtra(EXTRA.DENY_NEGATIVE_BUTTON_TEXT);
+
     }
 
     private AlertDialog mDlg;
 
     private void load() {
-        final ArrayList<String> deniedPermissions = getDeniedPermissions(mContext, mRequestedPermissions);
+        final List<String> deniedPermissions = PermissionRequest.getDeniedPermissions(mContext, mRequestedPermissions);
 
         if (deniedPermissions.size() <= 0)
             throw new UnsupportedOperationException("!!deniedPermissions <= 0");
-        //android.util.Log..("PERMISSIONS", "묻어봄");
+        android.util.Log.e("PERMISSIONS", "묻어봄" + deniedPermissions);
         requestPermissions(deniedPermissions);
     }
 
 
-    private void requestPermissions(@NonNull final ArrayList<String> deniedPermissions) {
+    private void requestPermissions(@NonNull final List<String> deniedPermissions) {
         final CharSequence message = mRequestMessage;
+        final String[] permissions = deniedPermissions.toArray(new String[deniedPermissions.size()]);
+
+        android.util.Log.e("PERMISSIONS", "묻어봄" + Arrays.toString(permissions));
+
         if (message == null || message.length() <= 0) {
-            ActivityCompat.requestPermissions(mActivity, deniedPermissions.toArray(new String[deniedPermissions.size()]), REQ_REQUEST);
+            ActivityCompat.requestPermissions(mActivity, permissions, REQ_REQUEST);
             return;
         }
 
@@ -122,7 +126,7 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == REQ_REQUEST) {
-            final ArrayList<String> deniedPermissions = getDeniedPermissions(mContext, mRequestedPermissions);
+            final List<String> deniedPermissions = PermissionRequest.getDeniedPermissions(mContext, mRequestedPermissions);
             if (deniedPermissions.size() > 0)
                 denyPermissions();
             else
@@ -140,12 +144,10 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
             return;
         }
 
-        final ArrayList<String> deniedPermissions = getDeniedPermissions(mContext, mRequestedPermissions);
-
         if (mDenyPositiveButtonText == null || mDenyPositiveButtonText.length() <= 0)
-            mDenyPositiveButtonText = "설정";
+            mDenyPositiveButtonText = "거부";
         if (mDenyNegativeButtonText == null || mDenyNegativeButtonText.length() <= 0)
-            mDenyNegativeButtonText = "거부";
+            mDenyNegativeButtonText = "설정";
 
         mDlg = new AlertDialog.Builder(context)//
                 .setMessage(message)//
@@ -168,9 +170,9 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_SETTING) {
-            final ArrayList<String> deniedPermissions = getDeniedPermissions(mContext, mRequestedPermissions);
+            final List<String> deniedPermissions = PermissionRequest.getDeniedPermissions(mContext, mRequestedPermissions);
             if (deniedPermissions.size() > 0)
-                denyPermissions();
+                fireDenied();
             else
                 fireGranted();
             return;
@@ -185,41 +187,19 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
     }
 
     private void fireDenied() {
-        final ArrayList<String> deniedPermissions = getDeniedPermissions(mContext, mRequestedPermissions);
+        final List<String> deniedPermissions = PermissionRequest.getDeniedPermissions(mContext, mRequestedPermissions);
         PermissionObserver.getInstance().notifyObservers(deniedPermissions);
         finish();
         overridePendingTransition(0, 0);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //권한 있는지
-    @NonNull
-    private static ArrayList<String> getDeniedPermissions(Context
-                                                                  context, List<String> requestedPermissions) {
-        final ArrayList<String> deniedPermissions = new ArrayList<>();
-        if (requestedPermissions == null)
-            return deniedPermissions;
-
-        for (String permission : requestedPermissions) {
-            if (PackageManager.PERMISSION_DENIED == ContextCompat.checkSelfPermission(context, permission))
-                deniedPermissions.add(permission);
+    @Override
+    public void setRequestedOrientation(int requestedOrientation) {
+        try {
+            super.setRequestedOrientation(requestedOrientation);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return deniedPermissions;
-    }
-
-    public static boolean hasDeniedPermissions(Context context, String... permissions) {
-        for (String permission : permissions) {
-            if (PackageManager.PERMISSION_DENIED == ContextCompat.checkSelfPermission(context, permission))
-                return true;
-        }
-        return false;
-    }
-
-    public static boolean hasDeniedPermissions(Context context, List<String> permissions) {
-        for (String permission : permissions) {
-            if (PackageManager.PERMISSION_DENIED == ContextCompat.checkSelfPermission(context, permission))
-                return true;
-        }
-        return false;
     }
 }

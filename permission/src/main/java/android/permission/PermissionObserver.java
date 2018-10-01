@@ -2,19 +2,17 @@ package android.permission;
 
 import java.util.Observable;
 
-public final class PermissionObserver extends Observable {
+final class PermissionObserver extends Observable {
 
-	private static PermissionObserver INSTANCE = new PermissionObserver();
-	private PermissionObserver() {
-	}
+    private static PermissionObserver INSTANCE = new PermissionObserver();
 
-	public static PermissionObserver getInstance() {
-		return INSTANCE;
-	}
+    private PermissionObserver() { }
 
-	@Override
-	public void notifyObservers(Object arg) {
-		setChanged();
-		super.notifyObservers(arg);
-	}
+    static PermissionObserver getInstance() { return INSTANCE; }
+
+    @Override
+    public void notifyObservers(Object arg) {
+        setChanged();
+        super.notifyObservers(arg);
+    }
 }

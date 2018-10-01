@@ -4,47 +4,40 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 public class PermissionRequest implements Observer {
 
     protected Context mContext;
-    protected ArrayList<String> mPermissions;
+    protected List<String> mPermissions;
 
     protected OnPermissionGrantedListener mOnPermissionGrantedListener;
     protected OnPermissionDeniedListener mOnPermissionDeniedListener;
     protected CharSequence mRequestMessage;
+    protected CharSequence mRequestPositiveButtonText;
+    protected CharSequence mRequestNegativeButtonText;
     protected CharSequence mDenyMessage;
+    protected CharSequence mDenyPositiveButtonText;
+    protected CharSequence mDenyNegativeButtonText;
 
     public interface OnPermissionGrantedListener {
         void onGranted();
     }
 
     public interface OnPermissionDeniedListener {
-        void onDenied(PermissionRequest request, ArrayList<String> deniedPermissions);
+        void onDenied(PermissionRequest request, List<String> deniedPermissions);
     }
 
-    public PermissionRequest(Context context, ArrayList<String> permissions) {
+    public PermissionRequest(Context context, List<String> permissions) {
         mContext = context;
         mPermissions = permissions;
-    }
-
-    public ArrayList<String> getRequestPermissions() {
-        return mPermissions;
-    }
-
-    public PermissionRequest(Context context, ArrayList<String> permissions, OnPermissionGrantedListener onPermissionGrantedListener, OnPermissionDeniedListener onPermissionDeniedListener, String rquestMessage, String denyMessage) {
-        mContext = context;
-        mPermissions = permissions;
-        mOnPermissionGrantedListener = onPermissionGrantedListener;
-        mOnPermissionDeniedListener = onPermissionDeniedListener;
-        mRequestMessage = rquestMessage;
-        mDenyMessage = denyMessage;
     }
 
     @Override
@@ -65,38 +58,64 @@ public class PermissionRequest implements Observer {
         PermissionObserver.getInstance().deleteObserver(this);
     }
 
-    public void run() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && mOnPermissionGrantedListener != null)
-            mOnPermissionGrantedListener.onGranted();
+    public boolean run() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+            return false;
 
-
-        final ArrayList<String> deniedPermissions = new ArrayList<>();
-        for (String permission : mPermissions) {
-            if (PackageManager.PERMISSION_DENIED == ContextCompat.checkSelfPermission(mContext, permission))
-                deniedPermissions.add(permission);
-        }
-
-        if (deniedPermissions.size() <= 0 && mOnPermissionGrantedListener != null)
-            mOnPermissionGrantedListener.onGranted();
+        final List<String> deniedPermissions = getDeniedPermissions(mContext, mPermissions);
+        if (deniedPermissions.size() <= 0)
+            return false;
 
         PermissionObserver.getInstance().addObserver(this);
         Intent intent = new Intent(mContext, PermissionChecker.class);
-        intent.putExtra(PermissionChecker.EXTRA.PERMISSIONS, mPermissions);
+        intent.putStringArrayListExtra(PermissionChecker.EXTRA.PERMISSIONS, new ArrayList<>(mPermissions));
         intent.putExtra(PermissionChecker.EXTRA.REQUEST_MESSAGE, mRequestMessage);
         intent.putExtra(PermissionChecker.EXTRA.DENY_MESSAGE, mDenyMessage);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
+        return true;
+    }
+
+    //--------------------------------------------------------------------------------------
+    @NonNull
+    static List<String> getDeniedPermissions(@NonNull Context context, List<String> requestedPermissions) {
+        final ArrayList<String> deniedPermissions = new ArrayList<>();
+        if (requestedPermissions == null)
+            return deniedPermissions;
+
+        for (String permission : requestedPermissions) {
+            if (PackageManager.PERMISSION_DENIED == ContextCompat.checkSelfPermission(context, permission))
+                deniedPermissions.add(permission);
+        }
+        return deniedPermissions;
+    }
+
+    public static boolean isPermissions(@NonNull Context context, @NonNull String... permissions) {
+        for (String permission : permissions) {
+            if (PackageManager.PERMISSION_DENIED == ContextCompat.checkSelfPermission(context, permission))
+                return false;
+        }
+        return true;
+    }
+
+    public static boolean isIn(@NonNull Context context, @NonNull String... permissions) {
+        for (String permission : permissions) {
+            if (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(context, permission))
+                return true;
+        }
+        return false;
+    }
+
+    //--------------------------------------------------------------------------------------
+    public static Builder builder(Context context, String... permissions) {
+        return new Builder(context, Arrays.asList(permissions));
     }
 
     public static class Builder {
         PermissionRequest p;
 
-        public Builder(Context context, ArrayList<String> permissions) {
+        private Builder(Context context, List<String> permissions) {
             p = new PermissionRequest(context, permissions);
-        }
-
-        public Builder(Context context, String... permissions) {
-            this(context, new ArrayList<String>(Arrays.asList(permissions)));
         }
 
         public Builder setOnPermissionGrantedListener(OnPermissionGrantedListener onPermissionGrantedListener) {
@@ -114,13 +133,34 @@ public class PermissionRequest implements Observer {
             return this;
         }
 
+        public Builder setRequestPositiveButtonText(CharSequence requestPositiveButtonText) {
+            p.mRequestPositiveButtonText = requestPositiveButtonText;
+            return this;
+        }
+
+        public Builder setRequestNegativeButtonText(CharSequence requestNegativeButtonText) {
+            p.mRequestNegativeButtonText = requestNegativeButtonText;
+            return this;
+        }
+
         public Builder setDenyMessage(CharSequence denyMessage) {
             p.mDenyMessage = denyMessage;
             return this;
         }
 
-        public void run() {
-            p.run();
+        public Builder setDenyPositiveButtonText(CharSequence denyPositiveButtonText) {
+            p.mDenyPositiveButtonText = denyPositiveButtonText;
+            return this;
         }
+
+        public Builder setDenyNegativeButtonText(CharSequence denyNegativeButtonText) {
+            p.mDenyNegativeButtonText = denyNegativeButtonText;
+            return this;
+        }
+
+        public boolean run() {
+            return p.run();
+        }
+
     }
 }
