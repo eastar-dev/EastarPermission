@@ -27,11 +27,12 @@ permission is most of simple and smallest permission check helper.
 ## Demo
 
 
-![Screenshot](https://github.com/djrain/permission/blob/master/demo.png?raw=true)    
+![Screenshot](https://github.com/djrain/permission/blob/readme/demo.gif?raw=true)    
            
-           
-1. Request Permissions.
-2. If user denied permissions, we will show message dialog with Setting button.
+
+sample RESULTDLG
+1. Request permission
+2. Show message dialog for setting when denied permission
 
 
 
@@ -59,7 +60,7 @@ permission is most of simple and smallest permission check helper.
 ```javascript
 
 	dependencies {
-	        implementation 'com.github.djrain:permission:2.1.0'
+	        implementation 'com.github.djrain:permission:2.1.2'
 	}
 
 
