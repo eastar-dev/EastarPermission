@@ -1,2 +1,2 @@
-//include ':app'
-include ':permission'
+include ':app'
+//include ':permission'

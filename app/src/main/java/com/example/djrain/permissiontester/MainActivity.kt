@@ -10,6 +10,7 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
@@ -21,22 +22,48 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, "Copyright 2016 Eastar Jeong", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
         }
 
 
-        simple.setOnClickListener{
-            var request =  PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
+        simple.setOnClickListener {
+            var request = PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
+                    .run()
+
+            Toast.makeText(this, "real requested $request", Toast.LENGTH_SHORT).show()
+        }
+
+        request_dlg.setOnClickListener {
+            var request = PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
                     .setRequestMessage("for contact photo save image")
                     .setRequestPositiveButtonText("OK")
                     .setRequestNegativeButtonText("cancel")
                     .run()
 
-            android.util.Log.i( "permission demo" , "real requested $request")
+            Toast.makeText(this, "real requested $request", Toast.LENGTH_SHORT).show()
         }
+        result_dlg.setOnClickListener {
+            var request = PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
+                    .setDenyMessage("if u reject permission, u can't use this service\n\nPlase turn on permissions at[Setting] > [Permission]")
+                    .setDenyPositiveButtonText("close")
+                    .setDenyNegativeButtonText("setting")
+                    .run()
 
+            Toast.makeText(this, "real requested $request", Toast.LENGTH_SHORT).show()
+        }
+        all.setOnClickListener {
+            var request = PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
+                    .setRequestMessage("for contact photo save image")
+                    .setRequestPositiveButtonText("OK")
+                    .setRequestNegativeButtonText("cancel")
+                    .setDenyMessage("if u reject permission, u can't use this service\n\nPlase turn on permissions at[Setting] > [Permission]")
+                    .setDenyPositiveButtonText("close")
+                    .setDenyNegativeButtonText("setting")
+                    .run()
 
+            Toast.makeText(this, "real requested $request", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
