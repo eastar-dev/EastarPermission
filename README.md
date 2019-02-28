@@ -3,10 +3,13 @@
 
 # What is permission?
 
-After Marshmallow in Android
+After Marshmallow in Android<br/>
 안드로이드에서는 권한을 요청합니다.
+
+This library is a simple library designed to help you with authorization requests.<br/>
 이 라이브러리는 권한 요청 작업 도움을 주고자 만들어진 심플한 라이브러리 입니다.
 
+For more information about Android privilege requests, please see:<br/>
 안드로이드 권한 요청에 대한 상세한 설명은 아래 주소를 참고 하시면 됩니다.<br/>
 ([See permissions overview](https://developer.android.com/guide/topics/permissions/overview))<br/>
 
