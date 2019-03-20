@@ -2,6 +2,7 @@ package com.example.djrain.permissiontester
 
 import android.Manifest
 import android.content.Intent
+import android.log.Log
 import android.net.Uri
 import android.os.Bundle
 import android.permission.PermissionRequest
@@ -29,6 +30,8 @@ class MainActivity : AppCompatActivity() {
 
         simple.setOnClickListener {
             var request = PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
+                    .setOnPermissionGrantedListener { Log.i() }
+                    .setOnPermissionDeniedListener { _, _ -> Log.w() }
                     .run()
 
             Toast.makeText(this, "real requested $request", Toast.LENGTH_SHORT).show()
@@ -36,6 +39,8 @@ class MainActivity : AppCompatActivity() {
 
         request_dlg.setOnClickListener {
             var request = PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
+                    .setOnPermissionGrantedListener { Log.i() }
+                    .setOnPermissionDeniedListener { _, _ -> Log.w() }
                     .setRequestMessage("for contact photo save image")
                     .setRequestPositiveButtonText("OK")
                     .setRequestNegativeButtonText("cancel")
@@ -45,6 +50,8 @@ class MainActivity : AppCompatActivity() {
         }
         result_dlg.setOnClickListener {
             var request = PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
+                    .setOnPermissionGrantedListener { Log.i() }
+                    .setOnPermissionDeniedListener { _, _ -> Log.w() }
                     .setDenyMessage("if u reject permission, u can't use this service\n\nPlase turn on permissions at[Setting] > [Permission]")
                     .setDenyPositiveButtonText("close")
                     .setDenyNegativeButtonText("setting")
@@ -54,6 +61,8 @@ class MainActivity : AppCompatActivity() {
         }
         all.setOnClickListener {
             var request = PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
+                    .setOnPermissionGrantedListener { Log.i() }
+                    .setOnPermissionDeniedListener { _, _ -> Log.w() }
                     .setRequestMessage("for contact photo save image")
                     .setRequestPositiveButtonText("OK")
                     .setRequestNegativeButtonText("cancel")

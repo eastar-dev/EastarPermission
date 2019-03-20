@@ -2,18 +2,18 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.djrain'
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: "http://localhost:8081/repository/maven-releases/") {
-                authentication(userName: "admin", password: "admin123")
-                pom.groupId = "com.eastandroid.smartc"
-                pom.artifactId = "permission"
-                pom.version = '1.0.0'
-            }
-        }
-    }
-}
+//uploadArchives {
+//    repositories {
+//        mavenDeployer {
+//            repository(url: "http://localhost:8081/repository/maven-releases/") {
+//                authentication(userName: "admin", password: "admin123")
+//                pom.groupId = "com.eastandroid.smartc"
+//                pom.artifactId = "permission"
+//                pom.version = '1.0.0'
+//            }
+//        }
+//    }
+//}
 
 
 android {

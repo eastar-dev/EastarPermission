@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class PermissionRequest implements Observer {
 
     protected Context mContext;
@@ -60,12 +61,16 @@ public class PermissionRequest implements Observer {
     }
 
     public boolean run() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            update(null, null); //all granted
             return false;
+        }
 
         final List<String> deniedPermissions = getDeniedPermissions(mContext, mPermissions);
-        if (deniedPermissions.size() <= 0)
+        if (deniedPermissions.size() <= 0) {
+            update(null, null); //all granted
             return false;
+        }
 
         PermissionObserver.getInstance().addObserver(this);
         Intent intent = new Intent(mContext, PermissionChecker.class);
@@ -116,6 +121,7 @@ public class PermissionRequest implements Observer {
         return new Builder(context, Arrays.asList(permissions));
     }
 
+    @SuppressWarnings({"UnusedReturnValue", "WeakerAccess", "unused"})
     public static class Builder {
         PermissionRequest p;
 
