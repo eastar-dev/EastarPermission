@@ -63,7 +63,7 @@ sample RESULTDLG
 ```javascript
 
 	dependencies {
-	        implementation 'com.github.djrain:permission:2.1.2'
+	        implementation 'com.github.djrain:permission:2.2.0'
 	}
 
 
