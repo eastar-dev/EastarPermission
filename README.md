@@ -1,4 +1,4 @@
-[![Release](https://jitpack.io/v/djrain/EastarPermission.svg)](https://jitpack.io/#djrain/EastarPermission)
+[![](https://jitpack.io/v/djrain/EastarPermission.svg)](https://jitpack.io/#djrain/EastarPermission)
 
 
 # What is permission?

@@ -1,17 +1,17 @@
 package dev.eastar.permission.demo
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
-import android.log.Log
 import android.net.Uri
 import android.os.Bundle
-import dev.eastar.permission.PermissionRequest
 import android.provider.Settings
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import dev.eastar.permission.PermissionRequest
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
@@ -27,42 +27,37 @@ class MainActivity : AppCompatActivity() {
                     .setAction("Action", null).show()
         }
 
-
         simple.setOnClickListener {
-            var request = PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
-                    .setOnPermissionGrantedListener { Log.i() }
-                    .setOnPermissionDeniedListener { _, _ -> Log.w() }
+            PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
+                    .setOnPermissionGrantedListener { toast("Requested Granted") }
+                    .setOnPermissionDeniedListener { _, deniedPermissions -> toast("Requested Denied $deniedPermissions") }
                     .run()
-
-            Toast.makeText(this, "real requested $request", Toast.LENGTH_SHORT).show()
         }
 
         request_dlg.setOnClickListener {
-            var request = PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
-                    .setOnPermissionGrantedListener { Log.i() }
-                    .setOnPermissionDeniedListener { _, _ -> Log.w() }
+            PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
+                    .setOnPermissionGrantedListener { toast("Requested Granted") }
+                    .setOnPermissionDeniedListener { _, deniedPermissions -> toast("Requested Denied $deniedPermissions") }
                     .setRequestMessage("for contact photo save image")
                     .setRequestPositiveButtonText("OK")
                     .setRequestNegativeButtonText("cancel")
                     .run()
-
-            Toast.makeText(this, "real requested $request", Toast.LENGTH_SHORT).show()
         }
+
         result_dlg.setOnClickListener {
-            var request = PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
-                    .setOnPermissionGrantedListener { Log.i() }
-                    .setOnPermissionDeniedListener { _, _ -> Log.w() }
+            PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
+                    .setOnPermissionGrantedListener { toast("Requested Granted") }
+                    .setOnPermissionDeniedListener { _, deniedPermissions -> toast("Requested Denied $deniedPermissions") }
                     .setDenyMessage("if u reject permission, u can't use this service\n\nPlase turn on permissions at[Setting] > [Permission]")
                     .setDenyPositiveButtonText("close")
                     .setDenyNegativeButtonText("setting")
                     .run()
-
-            Toast.makeText(this, "real requested $request", Toast.LENGTH_SHORT).show()
         }
+
         all.setOnClickListener {
-            var request = PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
-                    .setOnPermissionGrantedListener { Log.i() }
-                    .setOnPermissionDeniedListener { _, _ -> Log.w() }
+            PermissionRequest.builder(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CALENDAR)
+                    .setOnPermissionGrantedListener { toast("Requested Granted") }
+                    .setOnPermissionDeniedListener { _, deniedPermissions -> toast("Requested Denied $deniedPermissions") }
                     .setRequestMessage("for contact photo save image")
                     .setRequestPositiveButtonText("OK")
                     .setRequestNegativeButtonText("cancel")
@@ -71,7 +66,7 @@ class MainActivity : AppCompatActivity() {
                     .setDenyNegativeButtonText("setting")
                     .run()
 
-            Toast.makeText(this, "real requested $request", Toast.LENGTH_SHORT).show()
+            setting.setOnClickListener { setting() }
         }
     }
 
@@ -93,4 +88,12 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+}
+
+fun Context.toast(text: String) = Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+
+fun Context.setting() = try {
+    startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+} catch (e: Exception) {
+    e.printStackTrace()
 }

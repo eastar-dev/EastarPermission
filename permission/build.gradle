@@ -3,10 +3,10 @@ apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.djrain'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 27
+        targetSdkVersion 28
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -17,5 +17,5 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
 }
