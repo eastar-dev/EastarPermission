@@ -36,9 +36,9 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
-    releaseImplementation 'com.github.djrain:permission:2.2.0'
+    releaseImplementation 'com.github.djrain:EastarPermission:2.2.2'
     debugImplementation project(':permission')
 
-    implementation 'com.github.djrain:log:3.0.2'
+    implementation 'com.github.djrain:EastarLog:3.0.4'
 
 }

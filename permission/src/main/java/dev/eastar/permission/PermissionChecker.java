@@ -1,4 +1,19 @@
-package android.permission;
+/*
+ * Copyright 2016 copyright eastar Jeong
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package dev.eastar.permission;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -12,8 +27,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.WindowManager;
 
-import com.eastandroid.smartc.permission.R;
-
 import java.util.List;
 
 public class PermissionChecker extends android.support.v7.app.AppCompatActivity {
@@ -23,7 +36,6 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
 
     private static final int REQ_REQUEST = 10;
     private static final int REQ_SETTING = 20;
-
 
     public interface EXTRA {
         String PERMISSIONS = "PERMISSIONS";
@@ -40,7 +52,6 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
     private List<String> mRequestedPermissions;//최초 물어본 권한
 
     private CharSequence mRequestMessage;
-
 
     private CharSequence mDenyMessage;
 
@@ -98,7 +109,6 @@ public class PermissionChecker extends android.support.v7.app.AppCompatActivity 
 //        android.util.Log.e("PERMISSIONS", "묻어봄" + deniedPermissions);
         requestPermissions(deniedPermissions);
     }
-
 
     private void requestPermissions(@NonNull final List<String> deniedPermissions) {
         final CharSequence message = mRequestMessage;

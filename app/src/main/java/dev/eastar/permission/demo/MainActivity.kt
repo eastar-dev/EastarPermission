@@ -1,11 +1,11 @@
-package com.example.djrain.permissiontester
+package dev.eastar.permission.demo
 
 import android.Manifest
 import android.content.Intent
 import android.log.Log
 import android.net.Uri
 import android.os.Bundle
-import android.permission.PermissionRequest
+import dev.eastar.permission.PermissionRequest
 import android.provider.Settings
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Copyright 2016 Eastar Jeong", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, "Copyright 2016 eastar Jeong", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
         }
 

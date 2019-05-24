@@ -1,4 +1,4 @@
-[![Release](https://jitpack.io/v/djrain/permission.svg)](https://jitpack.io/#djrain/permission)
+[![Release](https://jitpack.io/v/djrain/EastarPermission.svg)](https://jitpack.io/#djrain/EastarPermission)
 
 
 # What is permission?
@@ -30,7 +30,7 @@ permission is most of simple and smallest permission check helper.
 ## Demo
 
 
-![Screenshot](https://github.com/djrain/permission/blob/readme/demo.gif?raw=true)    
+![Screenshot](https://github.com/djrain/EastarPermission/blob/readme/demo.gif?raw=true)    
            
 
 sample RESULTDLG
@@ -63,7 +63,7 @@ sample RESULTDLG
 ```javascript
 
 	dependencies {
-	        implementation 'com.github.djrain:permission:2.2.0'
+	        implementation 'com.github.djrain:EastarPermission:2.2.2'
 	}
 
 
@@ -122,7 +122,7 @@ You can customize something ...<br />
 
 ## License 
  ```code
-Copyright 2016 Eastar Jeong
+Copyright 2016 eastar Jeong
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -134,4 +134,5 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
-limitations under the License.```
+limitations under the License.
+```
