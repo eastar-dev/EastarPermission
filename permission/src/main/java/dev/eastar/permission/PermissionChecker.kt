@@ -106,7 +106,7 @@ class PermissionChecker : androidx.appcompat.app.AppCompatActivity() {
             mRequestNegativeButtonText = getString(R.string.permission_close)
         dlg = AlertDialog.Builder(context)
                 .setMessage(message)
-                .setOnCancelListener { dialog -> fireDenied() }
+                .setOnCancelListener { fireDenied() }
                 .setPositiveButton(mRequestPositiveButtonText) { _, _ -> ActivityCompat.requestPermissions(this, deniedPermissions.toTypedArray(), REQ_REQUEST) }
                 .setNegativeButton(mRequestNegativeButtonText) { _, _ -> fireDenied() }
                 .show()

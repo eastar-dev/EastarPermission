@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package dev.eastar.permission
 
 import android.content.Context
@@ -23,6 +25,7 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import java.util.*
 
+@Suppress("unused")
 class PermissionRequest(var context: Context, var permissions: List<String>) : Observer {
 
     var onGranted: (() -> Unit)? = null
@@ -70,6 +73,7 @@ class PermissionRequest(var context: Context, var permissions: List<String>) : O
         context.startActivity(intent)
     }
 
+    @Suppress("unused", "MemberVisibilityCanBePrivate")
     class Builder internal constructor(context: Context, permissions: List<String>) {
         private var p: PermissionRequest = PermissionRequest(context, permissions)
 
