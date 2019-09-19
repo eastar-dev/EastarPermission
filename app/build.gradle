@@ -1,8 +1,7 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 28
@@ -39,6 +38,6 @@ dependencies {
     releaseImplementation 'com.github.djrain:EastarPermission:2.2.2'
     debugImplementation project(':permission')
 
-    implementation 'com.github.djrain:EastarLog:3.0.4'
+    implementation 'com.github.djrain:EastarLog:3.1.1'
 
 }

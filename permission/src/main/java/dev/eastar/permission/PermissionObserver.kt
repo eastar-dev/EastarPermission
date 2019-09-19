@@ -13,21 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.eastar.permission;
+package dev.eastar.permission
 
-import java.util.Observable;
+import java.util.*
 
-final class PermissionObserver extends Observable {
-
-    private static PermissionObserver INSTANCE = new PermissionObserver();
-
-    private PermissionObserver() { }
-
-    static PermissionObserver getInstance() { return INSTANCE; }
-
-    @Override
-    public void notifyObservers(Object arg) {
-        setChanged();
-        super.notifyObservers(arg);
+object PermissionObserver : Observable() {
+    override fun notifyObservers(arg: Any) {
+        setChanged()
+        super.notifyObservers(arg)
     }
 }
