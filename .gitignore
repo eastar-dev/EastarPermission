@@ -1,11 +1,10 @@
 .DS_Store
 .gradle
+.svn
 build/
 /captures
 .externalNativeBuild
 *.iml
 /.idea
-*.aar
-*.aab
-*.apk
 /functions/node_modules/
+local.properties
