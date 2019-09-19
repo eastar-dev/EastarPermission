@@ -70,7 +70,7 @@ class PermissionChecker : androidx.appcompat.app.AppCompatActivity() {
     }
 
     private fun parseExtra() {
-        mRequestedPermissions = intent.getStringArrayListExtra(EXTRA.PERMISSIONS)
+        mRequestedPermissions = intent.getStringArrayListExtra(EXTRA.PERMISSIONS) ?: emptyList()
 
         mRequestMessage = intent.getCharSequenceExtra(EXTRA.REQUEST_MESSAGE)
         mRequestPositiveButtonText = intent.getCharSequenceExtra(EXTRA.REQUEST_POSITIVE_BUTTON_TEXT)
@@ -83,10 +83,10 @@ class PermissionChecker : androidx.appcompat.app.AppCompatActivity() {
 
     private fun load() {
         val deniedPermissions = PermissionRequest.getDeniedPermissions(this, mRequestedPermissions)
-
-        if (deniedPermissions.isEmpty())
-            throw UnsupportedOperationException("!!deniedPermissions <= 0")
-        //        android.util.Log.e("PERMISSIONS", "묻어봄" + deniedPermissions);
+        if (deniedPermissions.isEmpty()) {
+            fireGranted()
+            return
+        }
         requestPermissions(deniedPermissions)
     }
 
