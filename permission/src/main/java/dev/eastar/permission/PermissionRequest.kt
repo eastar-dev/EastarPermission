@@ -45,16 +45,16 @@ class PermissionRequest(var context: Context, var permissions: List<String>) : O
             onDenied?.invoke(this, deniedPermissions)
     }
 
-    fun run(): Boolean {
+    fun run() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            update(null, null) //all granted
-            return false
+            onGranted?.invoke()
+            return
         }
 
         val deniedPermissions = getDeniedPermissions(context, permissions)
         if (deniedPermissions.isEmpty()) {
-            update(null, null) //all granted
-            return false
+            onGranted?.invoke()
+            return
         }
 
         PermissionObserver.addObserver(this)
@@ -68,7 +68,6 @@ class PermissionRequest(var context: Context, var permissions: List<String>) : O
         intent.putExtra(PermissionChecker.EXTRA.DENY_NEGATIVE_BUTTON_TEXT, mDenyNegativeButtonText)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
-        return true
     }
 
     class Builder internal constructor(context: Context, permissions: List<String>) {
@@ -144,8 +143,8 @@ class PermissionRequest(var context: Context, var permissions: List<String>) : O
             return this
         }
 
-        fun run(): Boolean {
-            return p.run()
+        fun run() {
+            p.run()
         }
     }
 
